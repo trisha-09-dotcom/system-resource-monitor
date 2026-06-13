@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Resource Monitor</title>
+    <!-- Tailwind CSS for clean UI styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+
+    <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-96 text-center border border-gray-700">
+        <h1 class="text-2xl font-bold mb-6 text-indigo-400">📊 Live Infrastructure Metrics</h1>
+        
+        <!-- CPU Bar -->
+        <div class="mb-6">
+            <div class="flex justify-between mb-2 font-medium">
+                <span>CPU Usage</span>
+                <span id="cpu-text">0%</span>
+            </div>
+            <div class="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
+                <div id="cpu-bar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Memory Bar -->
+        <div class="mb-2">
+            <div class="flex justify-between mb-2 font-medium">
+                <span>Memory Usage</span>
+                <span id="mem-text">0%</span>
+            </div>
+            <div class="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
+                <div id="mem-bar" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script to dynamically fetch metrics every 2 seconds -->
+    <script>
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('/api/metrics');
+                const data = await response.json();
+                
+                // Update CPU UI elements
+                document.getElementById('cpu-text').innerText = data.cpu + '%';
+                document.getElementById('cpu-bar').style.width = data.cpu + '%';
+                
+                // Update Memory UI elements
+                document.getElementById('mem-text').innerText = data.memory + '%';
+                document.getElementById('mem-bar').style.width = data.memory + '%';
+            } catch (error) {
+                console.error("Error fetching resource metrics:", error);
+            }
+        }
+        // Fetch metrics immediately on load, then every 2000ms (2 seconds)
+        fetchMetrics();
+        setInterval(fetchMetrics, 2000);
+    </script>
+</body>
+</html>
